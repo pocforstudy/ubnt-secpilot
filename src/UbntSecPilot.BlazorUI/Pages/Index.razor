@@ -1,0 +1,299 @@
+@page "/"
+@inject HttpClient Http
+@using UbntSecPilot.Domain.Models
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Web
+@using UbntSecPilot.BlazorUI.Components
+
+<PageTitle>UBNT SecPilot - Threat Enrichment Dashboard</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mt-4 mb-4">UBNT SecPilot - Threat Enrichment Agent</h1>
+        </div>
+    </div>
+
+    <!-- Status Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>System Status</h5>
+                </div>
+                <div class="card-body">
+                    @if (loading)
+                    {
+                        <div class="text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    }
+                    else if (systemStatus != null && systemStatus.Any())
+                    {
+                        <div class="row">
+                            @foreach (var status in systemStatus ?? new List<Dictionary<string, object>>())
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <div class="card border-@StatusBadgeClass(status)">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">@(string.IsNullOrEmpty(GetStr(status, "Component")) ? "UNKNOWN" : GetStr(status, "Component").ToUpper())</h5>
+                                            <p class="card-text">
+                                                <span class="badge bg-@StatusBadgeClass(status)">
+                                                    @(string.IsNullOrEmpty(GetStr(status, "Status")) ? "unknown" : GetStr(status, "Status"))
+                                                </span>
+                                            </p>
+                                            @if (!string.IsNullOrEmpty(GetStr(status, "Target")))
+                                            {
+                                                <small class="text-muted">@GetStr(status, "Target")</small>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No status information available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary me-2" @onclick="RunAgent" disabled="@runningAgent">
+                        @if (runningAgent)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        Run Agent
+                    </button>
+                    <button class="btn btn-secondary" @onclick="RefreshData">
+                        Refresh Data
+                    </button>
+
+                    @if (!string.IsNullOrEmpty(lastAgentResult))
+                    {
+                        <div class="alert alert-success mt-3" role="alert">
+                            @lastAgentResult
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Key Performance Indicators</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">@eventsCount</h5>
+                                    <p class="card-text">Events Stored</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">@findingsCount</h5>
+                                    <p class="card-text">Findings Generated</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">@decisionsCount</h5>
+                                    <p class="card-text">Decisions Made</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">@uniqueSources</h5>
+                                    <p class="card-text">Unique Sources</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs for different views -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" @onclick='() => ActiveTab = "events"' type="button">Events</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" @onclick='() => ActiveTab = "findings"' type="button">Findings</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" @onclick='() => ActiveTab = "decisions"' type="button">Decisions</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" @onclick='() => ActiveTab = "thread"' type="button">Thread Analysis</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    @if (ActiveTab == "events")
+                    {
+                        <EventsTab Events="@(events ?? new List<NetworkEvent>())" />
+                    }
+                    else if (ActiveTab == "findings")
+                    {
+                        <FindingsTab Findings="@(findings ?? new List<ThreatFinding>())" />
+                    }
+                    else if (ActiveTab == "decisions")
+                    {
+                        <DecisionsTab Decisions="@(decisions ?? new List<AgentDecision>())" />
+                    }
+                    else if (ActiveTab == "thread")
+                    {
+                        <ThreadAnalysisTab />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool loading = true;
+    private bool runningAgent = false;
+    private string lastAgentResult = "";
+    private string activeTab = "events";
+
+    private List<Dictionary<string, object>> systemStatus = new();
+    private List<NetworkEvent> events = new();
+    private List<ThreatFinding> findings = new();
+    private List<AgentDecision> decisions = new();
+    private int eventsCount = 0;
+    private int findingsCount = 0;
+    private int decisionsCount = 0;
+    private int uniqueSources = 0;
+
+    private string ActiveTab
+    {
+        get => activeTab;
+        set
+        {
+            activeTab = value;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        loading = true;
+        try
+        {
+            // Load system status
+            systemStatus = await Http.GetFromJsonAsync<List<Dictionary<string, object>>>("/api/health/status") ?? new();
+
+            // Load events
+            events = await Http.GetFromJsonAsync<List<NetworkEvent>>("/api/events?limit=50") ?? new();
+            eventsCount = events.Count;
+            uniqueSources = events.Select(e => e.Source).Distinct().Count();
+
+            // Load findings
+            findings = await Http.GetFromJsonAsync<List<ThreatFinding>>("/api/findings?limit=50") ?? new();
+            findingsCount = findings.Count;
+
+            // Load decisions
+            decisions = await Http.GetFromJsonAsync<List<AgentDecision>>("/api/decisions?limit=50") ?? new();
+            decisionsCount = decisions.Count;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading data: {ex.Message}");
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task RunAgent()
+    {
+        runningAgent = true;
+        lastAgentResult = "";
+
+        try
+        {
+            var result = await Http.PostAsJsonAsync("/api/agent/run", new { });
+            if (result.IsSuccessStatusCode)
+            {
+                var decision = await result.Content.ReadFromJsonAsync<AgentDecision>();
+                lastAgentResult = decision != null
+                    ? $"Agent completed: {decision.Reason}"
+                    : "Agent completed successfully.";
+                await LoadData(); // Refresh data after running agent
+            }
+            else
+            {
+                lastAgentResult = $"Agent failed: {result.ReasonPhrase}";
+            }
+        }
+        catch (Exception ex)
+        {
+            lastAgentResult = $"Error running agent: {ex.Message}";
+        }
+        finally
+        {
+            runningAgent = false;
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        await LoadData();
+    }
+
+    private static string GetStr(Dictionary<string, object> dict, string key)
+    {
+        if (dict != null && dict.TryGetValue(key, out var value))
+        {
+            return value?.ToString() ?? string.Empty;
+        }
+        return string.Empty;
+    }
+
+    private static string StatusBadgeClass(Dictionary<string, object> dict)
+    {
+        var s = GetStr(dict, "Status");
+        if (string.IsNullOrEmpty(s)) return "secondary";
+        s = s.ToLowerInvariant();
+        return (s == "up" || s == "idle") ? "success" : "danger";
+    }
+}

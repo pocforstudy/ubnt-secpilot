@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: ubnt-secpilot-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: ubnt-secpilot-webapi
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__MongoDB: mongodb://mongo:27017/UbntSecPilot
+      MongoDB__DatabaseName: UbntSecPilot
+      UDM__BaseUrl: https://192.168.1.1
+      UDM__Username: admin
+      UDM__Password: ${UDM_PASSWORD:-your_password_here}
+      VirusTotal__ApiKey: ${VT_API_KEY:-your_virustotal_api_key_here}
+    depends_on:
+      - mongo
+    ports:
+      - "8000:80"
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.BlazorUI
+    container_name: ubnt-secpilot-blazorui
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      WebApiBaseUrl: http://api
+    depends_on:
+      - api
+    ports:
+      - "8501:8080"

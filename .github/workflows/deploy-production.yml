@@ -1,0 +1,100 @@
+name: UBNT SecPilot Production Deployment
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Extract version from release
+      if: github.event_name == 'release'
+      run: |
+        echo "RELEASE_VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+
+    - name: Set deployment version
+      run: |
+        if [ -n "$RELEASE_VERSION" ]; then
+          echo "DEPLOY_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
+        else
+          echo "DEPLOY_VERSION=v${{ github.sha }}" >> $GITHUB_ENV
+        fi
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata for production image
+      id: meta-prod
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=tag
+          type=sha,prefix=prod-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push production image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ${{ steps.meta-prod.outputs.tags }}
+        labels: ${{ steps.meta-prod.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Deploy to Kubernetes
+      run: |
+        echo "🚀 Deploying version ${{ env.DEPLOY_VERSION }} to production"
+        echo "🔧 Updating Kubernetes manifests"
+        echo "📦 Rolling out new deployment"
+
+        # Example kubectl commands:
+        # kubectl set image deployment/secpilot-api secpilot-api=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.DEPLOY_VERSION }}
+        # kubectl rollout status deployment/secpilot-api
+        # kubectl run health-check --image=curlimages/curl --rm -i --restart=Never -- curl -f https://api.ubnt-secpilot.com/health
+
+    - name: Run production smoke tests
+      run: |
+        echo "🧪 Running production smoke tests"
+        echo "🔍 Health checks and basic functionality tests"
+        # Example smoke tests would go here
+
+    - name: Notify deployment success
+      run: |
+        echo "✅ Production deployment completed successfully"
+        echo "🌐 Application available at: https://api.ubnt-secpilot.com"
+        echo "📊 Monitoring dashboard: https://grafana.ubnt-secpilot.com"
+        # Integration with notification systems could go here

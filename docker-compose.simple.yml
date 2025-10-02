@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  sonarqube:
+    image: sonarqube:10.6-community
+    container_name: ubnt-secpilot-sonarqube
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    ports:
+      - "9000:9000"
+    depends_on:
+      - sonarqube-db
+    networks:
+      - sonarqube-network
+
+  sonarqube-db:
+    image: postgres:15
+    container_name: ubnt-secpilot-sonarqube-db
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+      - POSTGRES_DB=sonar
+    volumes:
+      - sonarqube_db_data:/var/lib/postgresql/data
+    networks:
+      - sonarqube-network
+
+volumes:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
+  sonarqube_db_data:
+
+networks:
+  sonarqube-network:
+    driver: bridge

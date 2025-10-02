@@ -1,0 +1,44 @@
+@using UbntSecPilot.Domain.Models
+
+<div class="row">
+    <div class="col-12">
+        <h5>Agent Decisions (@Decisions.Count)</h5>
+        @if (Decisions.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Reason</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var decision in Decisions.Take(20))
+                        {
+                            <tr>
+                                <td>@decision.Action</td>
+                                <td>@decision.Reason</td>
+                                <td>@decision.CreatedAt.ToLocalTime()</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (Decisions.Count > 20)
+            {
+                <div class="text-muted">Showing first 20 of @Decisions.Count decisions</div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No decisions recorded yet.</p>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<AgentDecision> Decisions { get; set; } = new();
+}

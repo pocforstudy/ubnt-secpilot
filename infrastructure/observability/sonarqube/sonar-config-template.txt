@@ -1,0 +1,48 @@
+# SonarQube Configuration Template
+# Copy this content to configure SonarQube quality profiles
+
+# 1. Login to SonarQube: http://localhost:9000
+# 2. Go to Quality Profiles
+# 3. Create or edit "UBNT SecPilot C#" profile
+
+# Recommended Rules for C# projects:
+# - Enable all rules in "Reliability" category
+# - Enable all rules in "Security" category
+# - Enable rules for "Maintainability" (complexity, duplication)
+# - Enable rules for "Code Smell" (naming, formatting)
+
+# Custom Quality Profile Rules:
+sonar.qualityProfiles.create=true
+sonar.qualityProfiles.name=UBNT SecPilot C#
+
+# Enable specific rule sets
+sonar.rules.enableAll=true
+
+# Project-specific exclusions
+sonar.exclusions=**/Migrations/**,**/bin/**,**/obj/**,**/*Designer.cs,**/*.AssemblyInfo.cs
+
+# Coverage settings
+sonar.coverage.minimum=80.0
+sonar.coverage.newCode.minimum=80.0
+
+# Duplication settings
+sonar.duplication.maxBlockSize=100
+sonar.duplication.minBlockSize=10
+
+# Security settings
+sonar.security.enable=true
+sonar.security.report.path=security-report.json
+
+# Custom rules for .NET 8 + Orleans
+sonar.rules.create=true
+sonar.rules.key=custom:orleans-grain-pattern
+sonar.rules.name=Orleans Grain Implementation Pattern
+sonar.rules.description=Ensure proper Orleans grain implementation patterns
+sonar.rules.severity=MAJOR
+sonar.rules.status=READY
+
+# Integration with CI/CD
+sonar.webhooks.create=true
+sonar.webhooks.name=GitHub Actions
+sonar.webhooks.url=${GITHUB_WEBHOOK_URL}
+sonar.webhooks.secret=${GITHUB_WEBHOOK_SECRET}

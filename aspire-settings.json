@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json.schemastore.org/aspire",
+  "orchestration": {
+    "mongodb": {
+      "databaseName": "UbntSecPilot",
+      "collections": [
+        "NetworkEvents",
+        "ThreatFindings",
+        "AgentDecisions",
+        "ThreadAnalysis"
+      ]
+    },
+    "redis": {
+      "enabled": true,
+      "connectionString": "redis:6379"
+    },
+    "dashboard": {
+      "enabled": true,
+      "port": 18888,
+      "otlp": {
+        "enabled": true,
+        "endpoint": "http://localhost:18888"
+      }
+    }
+  },
+  "services": {
+    "api": {
+      "pathBase": "/api",
+      "https": {
+        "enabled": false
+      }
+    },
+    "blazor-ui": {
+      "pathBase": "/",
+      "https": {
+        "enabled": false
+      }
+    }
+  }
+}

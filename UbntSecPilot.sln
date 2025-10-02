@@ -1,0 +1,75 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbntSecPilot.BlazorUI", "src\UbntSecPilot.BlazorUI\UbntSecPilot.BlazorUI.csproj", "{91CE010D-7B77-4A64-833B-EDC1C62BE711}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbntSecPilot.Application.Tests", "tests\UbntSecPilot.Application.Tests\UbntSecPilot.Application.Tests.csproj", "{68428696-4BD7-4821-BCBC-F62A3F7B6C99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbntSecPilot.Orleans.Tests", "tests\UbntSecPilot.Orleans.Tests\UbntSecPilot.Orleans.Tests.csproj", "{31B02C5F-3160-4294-861B-7F1D4BF7A64B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbntSecPilot.WebApi", "src\UbntSecPilot.WebApi\UbntSecPilot.WebApi.csproj", "{3C6B6B5C-E5A8-4D0E-8E3C-2B2E3F2C8E11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbntSecPilot.Domain", "src\UbntSecPilot.Domain\UbntSecPilot.Domain.csproj", "{8C8DBA9E-9B1E-4B29-9B7B-3C2B9E6F8E22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbntSecPilot.Application", "src\UbntSecPilot.Application\UbntSecPilot.Application.csproj", "{AD0D1B3A-2D3E-4F88-91C1-2A4C6E9B7C33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbntSecPilot.Infrastructure", "src\UbntSecPilot.Infrastructure\UbntSecPilot.Infrastructure.csproj", "{B7E0E4A2-1C9C-4C72-9E0A-5F1B2D3C4D44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbntSecPilot.Agents", "src\UbntSecPilot.Agents\UbntSecPilot.Agents.csproj", "{C4F3A6B7-9E1D-4B2C-A1B2-6C7D8E9F0A55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbntSecPilot.Agents.Orleans", "src\UbntSecPilot.Agents.Orleans\UbntSecPilot.Agents.Orleans.csproj", "{D5E6F7A8-B9C0-4D1E-A2B3-7C8D9E0F1B66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbntSecPilot.AppHost", "src\UbntSecPilot.AppHost\UbntSecPilot.AppHost.csproj", "{A1B2C3D4-E5F6-4789-ABCD-EF1234567890}"
+EndProject
+Global
+GlobalSection(SolutionConfigurationPlatforms) = preSolution
+Debug|Any CPU = Debug|Any CPU
+Release|Any CPU = Release|Any CPU
+EndGlobalSection
+GlobalSection(ProjectConfigurationPlatforms) = postSolution
+y CPU.ActiveCfg = Debug|Any CPU
+y CPU.Build.0 = Debug|Any CPU
+y CPU.ActiveCfg = Release|Any CPU
+y CPU.Build.0 = Release|Any CPU
+y CPU.ActiveCfg = Debug|Any CPU
+y CPU.Build.0 = Debug|Any CPU
+y CPU.ActiveCfg = Release|Any CPU
+y CPU.Build.0 = Release|Any CPU
+y CPU.ActiveCfg = Debug|Any CPU
+y CPU.Build.0 = Debug|Any CPU
+y CPU.ActiveCfg = Release|Any CPU
+y CPU.Build.0 = Release|Any CPU
+y CPU.ActiveCfg = Debug|Any CPU
+y CPU.Build.0 = Debug|Any CPU
+y CPU.ActiveCfg = Release|Any CPU
+y CPU.Build.0 = Release|Any CPU
+y CPU.ActiveCfg = Debug|Any CPU
+y CPU.Build.0 = Debug|Any CPU
+y CPU.ActiveCfg = Release|Any CPU
+y CPU.Build.0 = Release|Any CPU
+y CPU.ActiveCfg = Debug|Any CPU
+y CPU.Build.0 = Debug|Any CPU
+y CPU.ActiveCfg = Release|Any CPU
+y CPU.Build.0 = Release|Any CPU
+y CPU.ActiveCfg = Debug|Any CPU
+y CPU.Build.0 = Debug|Any CPU
+y CPU.ActiveCfg = Release|Any CPU
+y CPU.Build.0 = Release|Any CPU
+y CPU.ActiveCfg = Debug|Any CPU
+y CPU.Build.0 = Debug|Any CPU
+y CPU.ActiveCfg = Release|Any CPU
+y CPU.Build.0 = Release|Any CPU
+y CPU.ActiveCfg = Debug|Any CPU
+y CPU.Build.0 = Debug|Any CPU
+y CPU.ActiveCfg = Release|Any CPU
+y CPU.Build.0 = Release|Any CPU
+y CPU.ActiveCfg = Debug|Any CPU
+y CPU.Build.0 = Debug|Any CPU
+y CPU.ActiveCfg = Release|Any CPU
+y CPU.Build.0 = Release|Any CPU
+EndGlobalSection
+GlobalSection(SolutionProperties) = preSolution
+Node = FALSE
+EndGlobalSection
+EndGlobal

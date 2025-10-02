@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.0" />
+    <PackageReference Include="Aspire.Hosting.MongoDB" Version="8.2.0" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="8.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UbntSecPilot.WebApi\UbntSecPilot.WebApi.csproj" />
+    <ProjectReference Include="..\UbntSecPilot.BlazorUI\UbntSecPilot.BlazorUI.csproj" />
+    <ProjectReference Include="..\UbntSecPilot.Agents.Orleans\UbntSecPilot.Agents.Orleans.csproj" />
+  </ItemGroup>
+
+</Project>

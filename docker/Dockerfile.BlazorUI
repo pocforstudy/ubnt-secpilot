@@ -1,0 +1,27 @@
+# Build and publish Blazor Server (net8.0)
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy project files
+COPY ["UbntSecPilot.BlazorUI/UbntSecPilot.BlazorUI.csproj", "UbntSecPilot.BlazorUI/"]
+COPY ["UbntSecPilot.Application/UbntSecPilot.Application.csproj", "UbntSecPilot.Application/"]
+COPY ["UbntSecPilot.Domain/UbntSecPilot.Domain.csproj", "UbntSecPilot.Domain/"]
+COPY ["UbntSecPilot.Infrastructure/UbntSecPilot.Infrastructure.csproj", "UbntSecPilot.Infrastructure/"]
+
+# Restore
+RUN dotnet restore "UbntSecPilot.BlazorUI/UbntSecPilot.BlazorUI.csproj"
+
+# Copy full source
+COPY . .
+
+# Build
+WORKDIR /src/UbntSecPilot.BlazorUI
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
+
+# Runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+WORKDIR /app
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "UbntSecPilot.BlazorUI.dll"]

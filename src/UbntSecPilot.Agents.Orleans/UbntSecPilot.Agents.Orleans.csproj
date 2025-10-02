@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../UbntSecPilot.Domain/UbntSecPilot.Domain.csproj" />
+    <ProjectReference Include="../UbntSecPilot.Application/UbntSecPilot.Application.csproj" />
+    <ProjectReference Include="../UbntSecPilot.Infrastructure/UbntSecPilot.Infrastructure.csproj" />
+    <ProjectReference Include="../UbntSecPilot.Agents/UbntSecPilot.Agents.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Orleans.Core" Version="8.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Runtime" Version="8.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" Version="8.1.0" />
+  </ItemGroup>
+</Project>

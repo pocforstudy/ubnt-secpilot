@@ -1,0 +1,79 @@
+name: Dependency Management
+
+on:
+  schedule:
+    # Run weekly on Mondays at 8 AM UTC
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Update .NET packages
+      run: |
+        dotnet list UbntSecPilot.sln package --outdated
+        # For automated updates, you could use:
+        # dotnet outdated UbntSecPilot.sln --upgrade
+
+    - name: Check for outdated Docker images
+      run: |
+        echo "🔍 Checking for outdated base images..."
+        # Example: check if base .NET images have updates
+        # This could integrate with tools like Trivy or similar
+
+    - name: Create dependency update report
+      run: |
+        echo "## 📦 Dependency Update Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### .NET Packages" >> $GITHUB_STEP_SUMMARY
+        dotnet list UbntSecPilot.sln package --outdated >> $GITHUB_STEP_SUMMARY 2>&1 || echo "No outdated packages found"
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Recommendations" >> $GITHUB_STEP_SUMMARY
+        echo "- Review outdated packages for security updates" >> $GITHUB_STEP_SUMMARY
+        echo "- Test applications thoroughly after updates" >> $GITHUB_STEP_SUMMARY
+        echo "- Update Docker base images regularly" >> $GITHUB_STEP_SUMMARY
+
+  security-updates:
+    name: Security Vulnerability Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+    - name: Check for critical vulnerabilities
+      run: |
+        if grep -q "CRITICAL" trivy-results.sarif; then
+          echo "🚨 Critical vulnerabilities found!"
+          echo "📋 Review the Security tab for details"
+          exit 1
+        else
+          echo "✅ No critical vulnerabilities found"
+        fi

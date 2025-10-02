@@ -1,0 +1,21 @@
+name: "CodeQL Configuration"
+
+disable-default-queries: false
+
+queries:
+  - uses: security-and-quality
+  - uses: security-experimental
+
+paths-ignore:
+  - "**/bin/**"
+  - "**/obj/**"
+  - "**/*.Tests/**"
+  - "**/test-results/**"
+
+paths:
+  - "UbntSecPilot.WebApi"
+  - "UbntSecPilot.Application"
+  - "UbntSecPilot.Domain"
+  - "UbntSecPilot.Infrastructure"
+  - "UbntSecPilot.Agents"
+  - "UbntSecPilot.Agents.Orleans"

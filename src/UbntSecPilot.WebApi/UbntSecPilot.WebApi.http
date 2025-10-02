@@ -1,0 +1,6 @@
+@UbntSecPilot.WebApi_HostAddress = http://localhost:5016
+
+GET {{UbntSecPilot.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

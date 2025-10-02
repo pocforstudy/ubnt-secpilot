@@ -1,0 +1,74 @@
+@using UbntSecPilot.Domain.Models
+
+<div class="row">
+    <div class="col-12">
+        <h5>Threat Findings (@Findings.Count)</h5>
+        @if (Findings.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Event ID</th>
+                            <th>Severity</th>
+                            <th>Summary</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var finding in Findings.Take(20))
+                        {
+                            <tr class="@GetSeverityClass(finding.Severity)">
+                                <td>@finding.EventId</td>
+                                <td>
+                                    <span class="badge bg-@GetSeverityBadgeColor(finding.Severity)">
+                                        @finding.Severity
+                                    </span>
+                                </td>
+                                <td>@finding.Summary</td>
+                                <td>@finding.CreatedAt.ToLocalTime()</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (Findings.Count > 20)
+            {
+                <div class="text-muted">Showing first 20 of @Findings.Count findings</div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No findings recorded yet.</p>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<ThreatFinding> Findings { get; set; } = new();
+
+    private string GetSeverityClass(string severity)
+    {
+        return severity.ToLower() switch
+        {
+            "critical" => "table-danger",
+            "high" => "table-warning",
+            "medium" => "table-info",
+            "low" => "table-light",
+            _ => "table-light"
+        };
+    }
+
+    private string GetSeverityBadgeColor(string severity)
+    {
+        return severity.ToLower() switch
+        {
+            "critical" => "danger",
+            "high" => "warning",
+            "medium" => "info",
+            "low" => "secondary",
+            _ => "secondary"
+        };
+    }
+}

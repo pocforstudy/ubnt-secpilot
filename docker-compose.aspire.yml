@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:8.2.0
+    ports:
+      - "18888:18888"
+      - "4317:4317"
+      - "4318:4318"
+    environment:
+      - DOTNET_ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL=http://localhost:18888
+      - DOTNET_ASPIRE_DASHBOARD_OTLP_LOGS_ENDPOINT_URL=http://localhost:4318
+    volumes:
+      - aspire-dashboard-data:/data
+    networks:
+      - ubnt-secpilot-network
+
+  mongodb:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=UbntSecPilot
+    volumes:
+      - mongodb-data:/data/db
+      - ./docker/mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - ubnt-secpilot-network
+
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - ubnt-secpilot-network
+
+  mongo-express:
+    image: mongo-express:1.0.0-alpha
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=pass
+      - ME_CONFIG_MONGODB_URL=mongodb://mongodb:27017/
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=pass
+    depends_on:
+      - mongodb
+    networks:
+      - ubnt-secpilot-network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    ports:
+      - "8082:8082"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    networks:
+      - ubnt-secpilot-network
+
+volumes:
+  aspire-dashboard-data:
+  mongodb-data:
+  redis-data:
+
+networks:
+  ubnt-secpilot-network:
+    driver: bridge
