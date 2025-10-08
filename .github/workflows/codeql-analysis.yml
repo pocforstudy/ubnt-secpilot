@@ -41,7 +41,7 @@ jobs:
       run: dotnet restore UbntSecPilot.sln
 
     - name: Build solution
-      run: dotnet build UbntSecPilot.sln --configuration Release --no-restore
+      run: dotnet build UbntSecPilot.sln --configuration Release --no-restore --no-incremental
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
