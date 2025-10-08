@@ -1,5 +1,5 @@
 # Use the official .NET 8 runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0.10 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -7,7 +7,7 @@ EXPOSE 8000
 EXPOSE 8501
 
 # Use the SDK image for building
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.403 AS build
 WORKDIR /src
 
 # Copy project files
