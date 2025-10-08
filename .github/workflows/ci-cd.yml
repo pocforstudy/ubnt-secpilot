@@ -227,10 +227,10 @@ jobs:
       with:
         args: >
           -Dsonar.projectKey=ubnt-secpilot
-          -Dsonar.projectName=UBNT SecPilot
+          -Dsonar.projectName="UBNT SecPilot"
           -Dsonar.projectVersion=1.0.0
-          -Dsonar.sources=UbntSecPilot.WebApi,UbntSecPilot.Application,UbntSecPilot.Domain,UbntSecPilot.Infrastructure,UbntSecPilot.Agents,UbntSecPilot.Agents.Orleans
-          -Dsonar.tests=UbntSecPilot.Application.Tests,UbntSecPilot.Agents.Tests,UbntSecPilot.Orleans.Tests
+          -Dsonar.sources=src/UbntSecPilot.WebApi,src/UbntSecPilot.Application,src/UbntSecPilot.Domain,src/UbntSecPilot.Infrastructure,src/UbntSecPilot.Agents,src/UbntSecPilot.Agents.Orleans,src/UbntSecPilot.AppHost,src/UbntSecPilot.BlazorUI
+          -Dsonar.tests=tests/UbntSecPilot.Application.Tests,tests/UbntSecPilot.Agents.Tests,tests/UbntSecPilot.Orleans.Tests
           -Dsonar.test.inclusions=**/*Tests.cs,**/*Test.cs
           -Dsonar.coverage.exclusions=**/*Test*.cs,**/*Tests.cs,**/*.AssemblyInfo.cs,**/*.AssemblyAttributes.cs,**/Program.cs,**/Startup.cs
           -Dsonar.cs.opencover.reportsPaths=coverage.xml
