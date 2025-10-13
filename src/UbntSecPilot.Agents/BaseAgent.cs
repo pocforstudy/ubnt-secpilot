@@ -22,14 +22,14 @@ namespace UbntSecPilot.Agents
             {
                 var (reason, metadata) = await LoopAsync(cancellationToken).ConfigureAwait(false);
                 metadata ??= new Dictionary<string, object>();
-                metadata["elapsed_ms"] = sw.ElapsedMilliseconds;
+                metadata["elapsed_ms"] = (double)sw.ElapsedMilliseconds;
                 return new AgentResult(Name, reason, new System.Collections.ObjectModel.ReadOnlyDictionary<string, object>(metadata));
             }
             catch (OperationCanceledException)
             {
                 return new AgentResult(Name, "cancelled", new System.Collections.ObjectModel.ReadOnlyDictionary<string, object>(new Dictionary<string, object>
                 {
-                    ["elapsed_ms"] = sw.ElapsedMilliseconds
+                    ["elapsed_ms"] = (double)sw.ElapsedMilliseconds
                 }));
             }
             catch (Exception ex)
@@ -37,7 +37,7 @@ namespace UbntSecPilot.Agents
                 return new AgentResult(Name, "failed", new System.Collections.ObjectModel.ReadOnlyDictionary<string, object>(new Dictionary<string, object>
                 {
                     ["error"] = ex.Message,
-                    ["elapsed_ms"] = sw.ElapsedMilliseconds
+                    ["elapsed_ms"] = (double)sw.ElapsedMilliseconds
                 }));
             }
         }

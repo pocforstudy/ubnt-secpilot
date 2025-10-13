@@ -96,7 +96,13 @@ namespace UbntSecPilot.Agents.Orleans.Tests
             Assert.Equal(expectedResult.Reason, result.Reason);
             Assert.Equal(expectedResult.Metadata, result.Metadata);
 
-            _loggerMock.Verify(l => l.LogInformation("Running agent {AgentName}", "threat-enrichment"), Times.Once);
+            _loggerMock.Verify(l => l.Log(
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("Running agent")),
+                    null,
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+                Times.Once);
             _agentGrainMock.Verify(g => g.RunAsync(CancellationToken.None), Times.Once);
         }
 
@@ -154,12 +160,14 @@ namespace UbntSecPilot.Agents.Orleans.Tests
         public string AgentName { get; }
         public string Status { get; }
         public bool IsRunning { get; }
+        public DateTime LastUpdated { get; }
 
         public AgentStatus(string agentName, string status, bool isRunning)
         {
             AgentName = agentName;
             Status = status;
             IsRunning = isRunning;
+            LastUpdated = DateTime.UtcNow;
         }
     }
 }

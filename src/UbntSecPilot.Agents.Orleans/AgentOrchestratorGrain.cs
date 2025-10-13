@@ -39,6 +39,11 @@ namespace UbntSecPilot.Agents.Orleans
 
         public async Task<AgentResult> RunAgentAsync(string agentName, CancellationToken cancellationToken = default)
         {
+            if (!_availableAgents.Contains(agentName))
+            {
+                throw new KeyNotFoundException($"Agent '{agentName}' is not registered");
+            }
+
             _logger.LogInformation("Running agent {AgentName}", agentName);
 
             var agentGrain = _grainFactory.GetGrain<IAgentGrain>(agentName);

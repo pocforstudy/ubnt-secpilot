@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Orleans;
+using Orleans.Serialization;
 
 namespace UbntSecPilot.Agents.Orleans
 {
@@ -14,12 +14,20 @@ namespace UbntSecPilot.Agents.Orleans
         Task<AgentStatus> GetAgentStatusAsync(string agentName);
     }
 
+    [GenerateSerializer]
     public sealed class AgentStatus
     {
-        public string AgentName { get; }
-        public string Status { get; }
-        public bool IsRunning { get; }
-        public DateTime LastUpdated { get; }
+        [Id(0)]
+        public string AgentName { get; init; } = string.Empty;
+
+        [Id(1)]
+        public string Status { get; init; } = string.Empty;
+
+        [Id(2)]
+        public bool IsRunning { get; init; }
+
+        [Id(3)]
+        public DateTime LastUpdated { get; init; }
 
         public AgentStatus(string agentName, string status, bool isRunning)
         {
@@ -27,6 +35,10 @@ namespace UbntSecPilot.Agents.Orleans
             Status = status ?? throw new ArgumentNullException(nameof(status));
             IsRunning = isRunning;
             LastUpdated = DateTime.UtcNow;
+        }
+
+        private AgentStatus()
+        {
         }
     }
 }

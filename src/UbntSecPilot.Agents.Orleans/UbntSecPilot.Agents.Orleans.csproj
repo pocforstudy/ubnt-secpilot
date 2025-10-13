@@ -9,10 +9,13 @@
     <ProjectReference Include="../UbntSecPilot.Application/UbntSecPilot.Application.csproj" />
     <ProjectReference Include="../UbntSecPilot.Infrastructure/UbntSecPilot.Infrastructure.csproj" />
     <ProjectReference Include="../UbntSecPilot.Agents/UbntSecPilot.Agents.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.Orleans.Core" Version="9.2.1" />
     <PackageReference Include="Microsoft.Orleans.Runtime" Version="9.2.1" />
     <PackageReference Include="Microsoft.Orleans.Sdk" Version="9.2.1" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
   </ItemGroup>
 </Project>

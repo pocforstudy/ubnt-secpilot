@@ -9,4 +9,9 @@
     <ProjectReference Include="../UbntSecPilot.Application/UbntSecPilot.Application.csproj" />
     <ProjectReference Include="../UbntSecPilot.Infrastructure/UbntSecPilot.Infrastructure.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="9.2.1" />
+    <PackageReference Include="Microsoft.Orleans.Serialization.Abstractions" Version="9.2.1" />
+    <PackageReference Include="Microsoft.Orleans.CodeGenerator" Version="9.2.1" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

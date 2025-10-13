@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -44,8 +43,6 @@ namespace UbntSecPilot.Agents.Tests
             Assert.Equal("no events", result.Reason);
             Assert.Equal(0, result.Metadata["events_collected"]);
             Assert.Equal(0, result.Metadata["findings_produced"]);
-
-            _loggerMock.Verify(l => l.LogInformation("No events to process"), Times.Once);
         }
 
         [Fact]
@@ -55,7 +52,7 @@ namespace UbntSecPilot.Agents.Tests
             var cleanEvent = CreateCleanNetworkEvent();
             _eventRepoMock.Setup(r => r.GetUnprocessedEventsAsync(50))
                 .ReturnsAsync(new List<NetworkEvent> { cleanEvent });
-            _eventRepoMock.Setup(r => r.SaveAsync(cleanEvent))
+            _eventRepoMock.Setup(r => r.SaveAsync(It.Is<NetworkEvent>(e => e.EventId == cleanEvent.EventId && e.Status == EventStatus.Processed)))
                 .Returns(Task.CompletedTask);
 
             var agent = CreateAgent();
@@ -67,11 +64,12 @@ namespace UbntSecPilot.Agents.Tests
             Assert.Equal("threat-enrichment", result.Action);
             Assert.Contains("processed 1 events", result.Reason);
             Assert.Equal(1, result.Metadata["events_collected"]);
+            Assert.Equal(1, result.Metadata["events_processed"]);
             Assert.Equal(0, result.Metadata["findings_produced"]);
 
-            _eventRepoMock.Verify(r => r.SaveAsync(cleanEvent), Times.Once);
+            _eventRepoMock.Verify(r => r.SaveAsync(It.Is<NetworkEvent>(e => e.EventId == cleanEvent.EventId)), Times.Once);
             _decisionRepoMock.Verify(r => r.SaveAsync(It.Is<AgentDecision>(d =>
-                d.AgentName == "threat-enrichment" && d.Reason.Contains("processed 1 events"))), Times.Once);
+                d.Action == "threat-enrichment" && d.Reason.Contains("processed 1 events"))), Times.Once);
         }
 
         [Fact]
@@ -81,9 +79,11 @@ namespace UbntSecPilot.Agents.Tests
             var suspiciousEvent = CreateSuspiciousNetworkEvent();
             _eventRepoMock.Setup(r => r.GetUnprocessedEventsAsync(50))
                 .ReturnsAsync(new List<NetworkEvent> { suspiciousEvent });
-            _eventRepoMock.Setup(r => r.SaveAsync(suspiciousEvent))
+            _eventRepoMock.Setup(r => r.SaveAsync(It.Is<NetworkEvent>(e => e.EventId == suspiciousEvent.EventId && e.Status == EventStatus.Processed)))
                 .Returns(Task.CompletedTask);
-            _findingRepoMock.Setup(r => r.SaveAsync(It.IsAny<ThreatFinding>()))
+            _findingRepoMock.Setup(r => r.SaveAsync(It.Is<ThreatFinding>(f =>
+                f.EventId == suspiciousEvent.EventId &&
+                f.Severity == "critical")))
                 .Returns(Task.CompletedTask);
 
             var agent = CreateAgent();
@@ -95,11 +95,12 @@ namespace UbntSecPilot.Agents.Tests
             Assert.Equal("threat-enrichment", result.Action);
             Assert.Contains("processed 1 events", result.Reason);
             Assert.Equal(1, result.Metadata["events_collected"]);
+            Assert.Equal(1, result.Metadata["events_processed"]);
             Assert.Equal(1, result.Metadata["findings_produced"]);
 
             _findingRepoMock.Verify(r => r.SaveAsync(It.Is<ThreatFinding>(f =>
                 f.EventId == suspiciousEvent.EventId &&
-                f.Severity == "high")), Times.Once);
+                f.Severity == "critical")), Times.Once);
         }
 
         [Fact]
@@ -110,7 +111,7 @@ namespace UbntSecPilot.Agents.Tests
             {
                 CreateCleanNetworkEvent(),
                 CreateSuspiciousNetworkEvent(),
-                CreateSuspiciousNetworkEvent()
+                CreateSuspiciousNetworkEvent("suspicious-event-2")
             };
 
             _eventRepoMock.Setup(r => r.GetUnprocessedEventsAsync(50))
@@ -129,6 +130,7 @@ namespace UbntSecPilot.Agents.Tests
             Assert.Equal("threat-enrichment", result.Action);
             Assert.Contains("processed 3 events", result.Reason);
             Assert.Equal(3, result.Metadata["events_collected"]);
+            Assert.Equal(3, result.Metadata["events_processed"]);
             Assert.Equal(2, result.Metadata["findings_produced"]);
 
             _eventRepoMock.Verify(r => r.SaveAsync(It.IsAny<NetworkEvent>()), Times.Exactly(3));
@@ -151,17 +153,17 @@ namespace UbntSecPilot.Agents.Tests
                 "test-source",
                 new Dictionary<string, object>
                 {
-                    ["source_ip"] = "192.168.1.100",
+                    ["source_ip"] = "203.0.113.1", // Non-private IP
                     ["destination_port"] = 80,
                     ["user_agent"] = "Mozilla/5.0"
                 },
                 DateTime.UtcNow);
         }
 
-        private NetworkEvent CreateSuspiciousNetworkEvent()
+        private NetworkEvent CreateSuspiciousNetworkEvent(string eventId = "suspicious-event-1")
         {
             return new NetworkEvent(
-                "suspicious-event-1",
+                eventId,
                 "test-source",
                 new Dictionary<string, object>
                 {

@@ -7,47 +7,57 @@ namespace UbntSecPilot.Domain.Models
     /// <summary>
     /// Agent decision with action and metadata
     /// </summary>
-    public class AgentDecision
+    public record AgentDecision(
+        string Id,
+        string Action,
+        string Reason,
+        Dictionary<string, object> Metadata,
+        DateTime CreatedAt,
+        DateTime? UpdatedAt,
+        DecisionStatus Status,
+        string? ExecutedBy
+    )
     {
-        public string Id { get; }
-        public string Action { get; }
-        public string Reason { get; }
-        public Dictionary<string, object> Metadata { get; }
-        public DateTime CreatedAt { get; }
-        public DateTime? UpdatedAt { get; private set; }
-        public DecisionStatus Status { get; private set; }
-        public string ExecutedBy { get; private set; }
-
-        public AgentDecision(string action, string reason, Dictionary<string, object> metadata = null)
+        public AgentDecision(string action, string reason, Dictionary<string, object>? metadata = null)
+            : this(
+                Guid.NewGuid().ToString(),
+                action ?? throw new ArgumentNullException(nameof(action)),
+                reason ?? throw new ArgumentNullException(nameof(reason)),
+                metadata ?? new Dictionary<string, object>(),
+                DateTime.UtcNow,
+                null,
+                DecisionStatus.Pending,
+                null
+            )
         {
-            Id = Guid.NewGuid().ToString();
-            Action = action ?? throw new ArgumentNullException(nameof(action));
-            Reason = reason ?? throw new ArgumentNullException(nameof(reason));
-            Metadata = metadata ?? new Dictionary<string, object>();
-            CreatedAt = DateTime.UtcNow;
-            UpdatedAt = null;
-            Status = DecisionStatus.Pending;
-            ExecutedBy = null;
         }
 
-        public void MarkAsExecuted(string executedBy)
+        public AgentDecision MarkAsExecuted(string executedBy)
         {
-            Status = DecisionStatus.Executed;
-            ExecutedBy = executedBy;
-            UpdatedAt = DateTime.UtcNow;
+            return this with
+            {
+                Status = DecisionStatus.Executed,
+                ExecutedBy = executedBy,
+                UpdatedAt = DateTime.UtcNow
+            };
         }
 
-        public void MarkAsFailed(string reason)
+        public AgentDecision MarkAsFailed(string reason)
         {
-            Status = DecisionStatus.Failed;
-            Metadata["failure_reason"] = reason;
-            UpdatedAt = DateTime.UtcNow;
+            return this with
+            {
+                Status = DecisionStatus.Failed,
+                UpdatedAt = DateTime.UtcNow
+            };
         }
 
-        public void Cancel()
+        public AgentDecision Cancel()
         {
-            Status = DecisionStatus.Cancelled;
-            UpdatedAt = DateTime.UtcNow;
+            return this with
+            {
+                Status = DecisionStatus.Cancelled,
+                UpdatedAt = DateTime.UtcNow
+            };
         }
     }
 }

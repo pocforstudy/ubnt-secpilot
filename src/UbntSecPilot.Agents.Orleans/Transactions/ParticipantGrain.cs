@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Orleans.Serialization;
 using UbntSecPilot.Agents.Orleans.Transactions;
 using UbntSecPilot.Domain.Models;
 using UbntSecPilot.Domain.Repositories;
 using UbntSecPilot.Infrastructure.Transactions;
-
 namespace UbntSecPilot.Agents.Orleans.Transactions
 {
     /// <summary>
     /// Generic participant that routes operations based on its key prefix:
     /// event:{id} | finding:{id} | decision:{id}
-    /// </summary>
     public sealed class ParticipantGrain : Grain, IParticipantGrain
     {
         private readonly ILogger<ParticipantGrain> _logger;
@@ -50,24 +49,28 @@ namespace UbntSecPilot.Agents.Orleans.Transactions
             var data = new Dictionary<string, object>();
             try
             {
+                var eventDomain = payload.GetUpdatedEvent();
+                var findingDomain = payload.GetFinding();
+                var decisionDomain = payload.GetDecision();
+
                 switch (kind)
                 {
                     case "event":
-                        if (payload.UpdatedEvent is NetworkEvent nev && nev.EventId == id)
+                        if (eventDomain is NetworkEvent nev && nev.EventId == id)
                         {
                             data["eventId"] = nev.EventId;
                             data["source"] = nev.Source;
                         }
                         break;
                     case "finding":
-                        if (payload.Finding is ThreatFinding tf)
+                        if (findingDomain is ThreatFinding tf && tf.EventId == id)
                         {
                             data["finding_reason"] = tf.Summary;
                             data["eventId"] = tf.EventId;
                         }
                         break;
                     case "decision":
-                        if (payload.Decision is AgentDecision ad)
+                        if (decisionDomain is AgentDecision ad)
                         {
                             data["decision_action"] = ad.Action;
                             data["decision_reason"] = ad.Reason;
@@ -93,22 +96,25 @@ namespace UbntSecPilot.Agents.Orleans.Transactions
         public async Task CommitAsync(string txId, TransactionPayload payload)
         {
             var (kind, id) = ParseKey();
+            var eventDomain = payload.GetUpdatedEvent();
+            var findingDomain = payload.GetFinding();
+            var decisionDomain = payload.GetDecision();
             switch (kind)
             {
                 case "event":
-                    if (payload.UpdatedEvent is NetworkEvent ev)
+                    if (eventDomain is NetworkEvent ev && (string.IsNullOrEmpty(id) || ev.EventId == id))
                     {
                         await _events.SaveAsync(ev).ConfigureAwait(false);
                     }
                     break;
                 case "finding":
-                    if (payload.Finding is ThreatFinding f)
+                    if (findingDomain is ThreatFinding f && (string.IsNullOrEmpty(id) || f.EventId == id))
                     {
                         await _findings.SaveAsync(f).ConfigureAwait(false);
                     }
                     break;
                 case "decision":
-                    if (payload.Decision is AgentDecision d)
+                    if (decisionDomain is AgentDecision d)
                     {
                         await _decisions.SaveAsync(d).ConfigureAwait(false);
                     }

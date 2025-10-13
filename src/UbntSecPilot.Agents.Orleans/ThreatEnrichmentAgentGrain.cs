@@ -89,7 +89,7 @@ namespace UbntSecPilot.Agents.Orleans
                             TransactionId = Guid.NewGuid().ToString("N"),
                             UpdatedEvent = ev,
                             Finding = finding,
-                            Metadata = new Dictionary<string, object>{{"agent","threat-enrichment"}}
+                            Metadata = new Dictionary<string, object>{{"threat-enrichment","threat-enrichment"}}
                         };
                         var participants = new List<string> { $"event:{ev.EventId}" };
                         if (finding != null)

@@ -7,48 +7,60 @@ namespace UbntSecPilot.Domain.Models
     /// <summary>
     /// Threat finding with severity and metadata
     /// </summary>
-    public class ThreatFinding
+    public record ThreatFinding(
+        string Id,
+        string EventId,
+        string Severity,
+        string Summary,
+        Dictionary<string, object> Metadata,
+        DateTime CreatedAt,
+        DateTime? UpdatedAt,
+        FindingStatus Status,
+        string? AssignedTo
+    )
     {
-        public string Id { get; }
-        public string EventId { get; }
-        public string Severity { get; }
-        public string Summary { get; }
-        public Dictionary<string, object> Metadata { get; }
-        public DateTime CreatedAt { get; }
-        public DateTime? UpdatedAt { get; private set; }
-        public FindingStatus Status { get; private set; }
-        public string AssignedTo { get; private set; }
-
-        public ThreatFinding(string eventId, string severity, string summary, Dictionary<string, object> metadata = null)
+        public ThreatFinding(string eventId, string severity, string summary, Dictionary<string, object>? metadata = null)
+            : this(
+                Guid.NewGuid().ToString(),
+                eventId ?? throw new ArgumentNullException(nameof(eventId)),
+                severity ?? throw new ArgumentNullException(nameof(severity)),
+                summary ?? throw new ArgumentNullException(nameof(summary)),
+                metadata ?? new Dictionary<string, object>(),
+                DateTime.UtcNow,
+                null,
+                FindingStatus.Open,
+                null
+            )
         {
-            Id = Guid.NewGuid().ToString();
-            EventId = eventId ?? throw new ArgumentNullException(nameof(eventId));
-            Severity = severity ?? throw new ArgumentNullException(nameof(severity));
-            Summary = summary ?? throw new ArgumentNullException(nameof(summary));
-            Metadata = metadata ?? new Dictionary<string, object>();
-            CreatedAt = DateTime.UtcNow;
-            UpdatedAt = null;
-            Status = FindingStatus.Open;
-            AssignedTo = null;
         }
 
-        public void AssignTo(string user)
+        public ThreatFinding AssignTo(string user)
         {
-            AssignedTo = user;
-            Status = FindingStatus.InProgress;
-            UpdatedAt = DateTime.UtcNow;
+            // Records are immutable, so we return a new instance
+            return this with
+            {
+                AssignedTo = user,
+                Status = FindingStatus.InProgress,
+                UpdatedAt = DateTime.UtcNow
+            };
         }
 
-        public void MarkAsResolved()
+        public ThreatFinding MarkAsResolved()
         {
-            Status = FindingStatus.Resolved;
-            UpdatedAt = DateTime.UtcNow;
+            return this with
+            {
+                Status = FindingStatus.Resolved,
+                UpdatedAt = DateTime.UtcNow
+            };
         }
 
-        public void MarkAsClosed()
+        public ThreatFinding MarkAsClosed()
         {
-            Status = FindingStatus.Closed;
-            UpdatedAt = DateTime.UtcNow;
+            return this with
+            {
+                Status = FindingStatus.Closed,
+                UpdatedAt = DateTime.UtcNow
+            };
         }
     }
 }

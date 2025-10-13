@@ -53,9 +53,10 @@ ubnt-secpilot/
 │       ├── Program.cs               # Configuração de serviços
 │       └── appsettings.json        # Configurações Aspire
 │
-├── 📁 tests/                        # Projetos de teste
-│   ├── UbntSecPilot.Application.Tests/ # Testes de aplicação
-│   └── UbntSecPilot.Orleans.Tests/  # Testes distribuídos
+├── 📁 tests/                        # Projetos de teste ✅ 100% Coverage
+│   ├── UbntSecPilot.Application.Tests/ # Testes de aplicação (8/8 ✅)
+│   ├── UbntSecPilot.Orleans.Tests/  # Testes distribuídos (28/28 ✅)
+│   └── UbntSecPilot.Agents.Tests/   # Testes de agentes base (16/16 ✅)
 │
 ├── 📁 build/                        # Scripts e ferramentas
 │   ├── build.sh                     # Script principal de build

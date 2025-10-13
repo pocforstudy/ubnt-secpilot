@@ -1,12 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <ItemGroup>
-    <ProjectReference Include="../UbntSecPilot.Application/UbntSecPilot.Application.csproj" />
-    <ProjectReference Include="../UbntSecPilot.Infrastructure/UbntSecPilot.Infrastructure.csproj" />
-    <ProjectReference Include="../UbntSecPilot.Agents.Orleans/UbntSecPilot.Agents.Orleans.csproj" />
-      <ProjectReference Include="../UbntSecPilot.Agents/UbntSecPilot.Agents.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>

@@ -4,37 +4,16 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591</NoWarn>
-    <EnableSwaggerInProduction>false</EnableSwaggerInProduction>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="9.0.0" />
-    <PackageReference Include="MediatR" Version="12.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.17" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.17" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.6" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\UbntSecPilot.Application\UbntSecPilot.Application.csproj" />
     <ProjectReference Include="..\UbntSecPilot.Infrastructure\UbntSecPilot.Infrastructure.csproj" />
-    <ProjectReference Include="..\UbntSecPilot.Agents\UbntSecPilot.Agents.csproj" />
-    <ProjectReference Include="..\UbntSecPilot.Agents.Orleans\UbntSecPilot.Agents.Orleans.csproj" />
-  </ItemGroup>
-
-  <!-- Exclude legacy Startup and MVC controllers to avoid conflicts with minimal APIs -->
-  <ItemGroup>
-    <Compile Remove="Startup.cs" />
-    <Compile Remove="Controllers/**/*.cs" />
-    <Compile Remove="Filters/**/*.cs" />
-    <Compile Remove="Hosted/RedpandaIngestionService.cs" />
-    <None Include="Startup.cs" />
-    <None Include="Controllers/**/*.cs" />
   </ItemGroup>
 
 </Project>

@@ -7,39 +7,42 @@ namespace UbntSecPilot.Domain.Models
     /// <summary>
     /// Immutable network/security event captured from UDM sensors.
     /// </summary>
-    public class NetworkEvent
+    public record NetworkEvent(
+        string EventId,
+        string Source,
+        Dictionary<string, object> Payload,
+        DateTime OccurredAt,
+        EventStatus Status,
+        string Priority
+    )
     {
-        public string EventId { get; }
-        public string Source { get; }
-        public Dictionary<string, object> Payload { get; }
-        public DateTime OccurredAt { get; }
-        public EventStatus Status { get; private set; }
-        public string Priority { get; private set; }
-
         public NetworkEvent(string eventId, string source, Dictionary<string, object> payload, DateTime occurredAt)
+            : this(
+                eventId ?? throw new ArgumentNullException(nameof(eventId)),
+                source ?? throw new ArgumentNullException(nameof(source)),
+                payload ?? new Dictionary<string, object>(),
+                occurredAt,
+                EventStatus.New,
+                DeterminePriority(payload ?? new Dictionary<string, object>())
+            )
         {
-            EventId = eventId ?? throw new ArgumentNullException(nameof(eventId));
-            Source = source ?? throw new ArgumentNullException(nameof(source));
-            Payload = payload ?? new Dictionary<string, object>();
-            OccurredAt = occurredAt;
-            Status = EventStatus.New;
-            Priority = DeterminePriority();
         }
 
-        public void MarkAsProcessed()
+        public NetworkEvent MarkAsProcessed()
         {
-            Status = EventStatus.Processed;
+            // Records are immutable, so we return a new instance with updated status
+            return this with { Status = EventStatus.Processed };
         }
 
-        public void MarkAsFailed(string reason)
+        public NetworkEvent MarkAsFailed(string reason)
         {
-            Status = EventStatus.Failed;
+            return this with { Status = EventStatus.Failed };
         }
 
-        private string DeterminePriority()
+        private static string DeterminePriority(Dictionary<string, object> payload)
         {
             // Business logic to determine priority based on payload
-            if (Payload.TryGetValue("severity", out var severity) && severity.ToString() == "critical")
+            if (payload.TryGetValue("severity", out var severity) && severity.ToString() == "critical")
                 return "High";
 
             return "Medium";

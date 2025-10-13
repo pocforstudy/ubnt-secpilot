@@ -1,34 +1,27 @@
+using UbntSecPilot.BlazorUI.Components;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
-
-// Configure HttpClient with Web API base URL from configuration
-var apiBaseUrl = builder.Configuration["WebApiBaseUrl"] ?? "http://localhost:8001";
-builder.Services.AddHttpClient("webapi", client =>
-{
-    client.BaseAddress = new Uri(apiBaseUrl);
-});
-// Provide default HttpClient for components that inject HttpClient
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("webapi"));
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+app.UseAntiforgery();
 
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapRazorPages();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.Run();

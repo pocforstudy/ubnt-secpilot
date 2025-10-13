@@ -240,93 +240,129 @@ docker_stop() {
     print_success "All services stopped"
 }
 
-# Function to show project status
-show_status() {
-    print_header "Project Status"
+# Function to show Docker status
+show_docker_status() {
+    echo
+    echo -e "${BLUE}🌐 Access URLs:${NC}"
+    echo -e "  API: http://localhost:8000"
+    echo -e "  Blazor UI: http://localhost:8501"
+    echo -e "  Trace Viewer: http://localhost:8000/api/trace"
+    echo -e "  Grafana: http://localhost:3000"
+    echo -e "  Prometheus: http://localhost:9090"
+    echo -e "  SonarQube: http://localhost:9000"
 
     echo
-    echo -e "${BLUE}📋 Project Structure:${NC}"
-    if [ -f "UbntSecPilot.sln" ]; then
-        print_success "✅ Solution file found"
-    else
-        print_error "❌ Solution file missing"
-    fi
-
-    echo
-    echo -e "${BLUE}🔧 Dependencies:${NC}"
-    check_dotnet
-
-    echo
-    echo -e "${BLUE}🐳 Docker:${NC}"
-    check_docker
-
-    echo
-    echo -e "${BLUE}📦 Available Commands:${NC}"
-    echo -e "  Build:        ./build.sh build [config]"
-    echo -e "  Restore:      ./build.sh restore"
-    echo -e "  Clean:        ./build.sh clean"
-    echo -e "  Test:         ./build.sh test"
-    echo
-    echo -e "${BLUE}🐛 Debug Commands:${NC}"
-    echo -e "  API:          ./build.sh debug api"
-    echo -e "  Blazor:       ./build.sh debug blazor"
-    echo -e "  Full:         ./build.sh debug full"
-    echo -e "  Aspire:       ./build.sh debug aspire"
-    echo
-    echo -e "${BLUE}🐳 Docker Commands:${NC}"
-    echo -e "  Run:          ./build.sh docker"
-    echo -e "  Background:   ./build.sh docker-bg"
-    echo -e "  Stop:         ./build.sh docker-stop"
-    echo
-    echo -e "${BLUE}📊 Information:${NC}"
-    echo -e "  Status:       ./build.sh status"
-    echo -e "  Help:         ./build.sh help"
-
-    echo
-    echo -e "${BLUE}⚙️  Current Configuration:${NC}"
-    echo -e "  Build Config: $BUILD_CONFIG"
-    echo -e "  API Port: $DEBUG_PORT"
-    echo -e "  Blazor Port: $BLAZOR_PORT"
+    echo -e "${BLUE}📊 Useful Commands:${NC}"
+    echo -e "  View logs: docker-compose logs -f"
+    echo -e "  Stop all: ./build.sh stop"
+    echo -e "  Restart: docker-compose restart"
 }
 
-# Function to show help
-show_help() {
-    echo "UBNT SecPilot Build Script - Help"
-    echo "================================"
+# Quick start commands for beginners
+quick_start() {
+    print_header "🚀 UBNT SecPilot - Quick Start Guide"
+
     echo
-    echo "A comprehensive build and development script for the UBNT SecPilot"
-    echo ".NET 8 application with Orleans and .NET Aspire integration."
+    echo -e "${BLUE}🎯 Most Common Commands:${NC}"
+    echo -e "  ${GREEN}./build.sh dev${NC}           # Start development environment"
+    echo -e "  ${GREEN}./build.sh prod${NC}          # Start production environment"
+    echo -e "  ${GREEN}./build.sh api${NC}           # Start API only"
+    echo -e "  ${GREEN}./build.sh web${NC}           # Start web interface only"
+    echo -e "  ${GREEN}./build.sh stop${NC}          # Stop all services"
     echo
-    echo -e "${BLUE}📋 BUILD COMMANDS${NC}"
-    echo -e "  ${GREEN}./build.sh build [config]${NC}    Build the application (default: Release)"
-    echo -e "  ${GREEN}./build.sh restore${NC}           Restore NuGet dependencies"
-    echo -e "  ${GREEN}./build.sh clean${NC}             Clean build artifacts"
-    echo -e "  ${GREEN}./build.sh test${NC}              Run unit tests"
+    echo -e "${BLUE}📋 For Beginners:${NC}"
+    echo -e "  ${YELLOW}./build.sh dev${NC}           # This is all you need to start!"
     echo
-    echo -e "${BLUE}🐛 DEBUG COMMANDS${NC}"
-    echo -e "  ${GREEN}./build.sh debug api${NC}         Debug API only"
-    echo -e "  ${GREEN}./build.sh debug blazor${NC}      Debug Blazor UI only"
-    echo -e "  ${GREEN}./build.sh debug full${NC}        Debug both API and Blazor"
-    echo -e "  ${GREEN}./build.sh debug aspire${NC}      Debug with .NET Aspire orchestration"
-    echo
-    echo -e "${BLUE}🐳 DOCKER COMMANDS${NC}"
-    echo -e "  ${GREEN}./build.sh docker${NC}            Run full stack with Docker"
-    echo -e "  ${GREEN}./build.sh docker-bg${NC}         Run Docker in background"
-    echo -e "  ${GREEN}./build.sh docker-stop${NC}       Stop Docker containers"
-    echo
-    echo -e "${BLUE}📊 INFORMATION${NC}"
-    echo -e "  ${GREEN}./build.sh status${NC}            Show project status"
-    echo -e "  ${GREEN}./build.sh help${NC}              Show this help message"
-    echo
-    echo -e "${BLUE}🎯 EXAMPLES${NC}"
-    echo -e "  ${YELLOW}./build.sh restore && ./build.sh build Debug${NC}"
-    echo -e "  ${YELLOW}./build.sh debug aspire${NC}                      # With Aspire dashboard"
-    echo -e "  ${YELLOW}./build.sh debug full${NC}                        # API + Blazor"
-    echo -e "  ${YELLOW}DEBUG_PORT=8001 ./build.sh debug api${NC}        # Custom port"
-    echo
-    echo -e "${BLUE}📚 DOCUMENTATION${NC}"
-    echo -e "  See BUILD_README.md for detailed documentation"
-    echo -e "  See ASPIRE.md for .NET Aspire specific information"
+    echo -e "${BLUE}🔧 Advanced Commands:${NC}"
+    echo -e "  ${PURPLE}./build.sh build${NC}         # Build application"
+    echo -e "  ${PURPLE}./build.sh test${NC}          # Run tests"
+    echo -e "  ${PURPLE}./build.sh clean${NC}         # Clean build files"
+    echo -e "  ${PURPLE}./build.sh status${NC}        # Show project status"
+}
+
+# Function for simple development start
+dev() {
+    print_header "Starting development environment..."
+    print_info "This will start the complete development stack"
+
+    # Check prerequisites
+    check_dotnet
+
+    # Restore dependencies if needed
+    if [ ! -d "src/UbntSecPilot.WebApi/bin" ] || [ ! -d "src/UbntSecPilot.BlazorUI/bin" ]; then
+        print_info "Restoring dependencies..."
+        restore
+        build Debug
+    fi
+
+    # Start full development environment
+    debug_full
+}
+
+# Function for production deployment
+prod() {
+    print_header "Starting production environment..."
+
+    if ! check_docker; then
+        print_error "Docker is required for production deployment"
+        exit 1
+    fi
+
+    print_info "Building production image..."
+    docker-compose build --parallel
+
+    print_info "Starting production stack..."
+    docker-compose up -d
+
+    print_success "Production environment started!"
+    show_docker_status
+}
+
+# Function to start API only
+api() {
+    print_header "Starting API server..."
+    check_dotnet
+
+    if [ ! -d "src/UbntSecPilot.WebApi/bin" ]; then
+        print_info "Building API..."
+        restore
+        build Debug
+    fi
+
+    debug_api
+}
+
+# Function to start web interface only
+web() {
+    print_header "Starting web interface..."
+    check_dotnet
+
+    if [ ! -d "src/UbntSecPilot.BlazorUI/bin" ]; then
+        print_info "Building web interface..."
+        restore
+        build Debug
+    fi
+
+    debug_blazor
+}
+
+# Function to stop all services
+stop() {
+    print_header "Stopping all services..."
+
+    # Stop Docker services if running
+    if docker-compose ps -q | grep -q .; then
+        print_info "Stopping Docker services..."
+        docker-compose down
+    fi
+
+    # Kill any running .NET processes
+    if pgrep -f "dotnet watch" > /dev/null; then
+        print_info "Stopping .NET processes..."
+        pkill -f "dotnet watch" || true
+    fi
+
+    print_success "All services stopped"
 }
 
 # Main command dispatcher
@@ -369,6 +405,21 @@ case "${1:-help}" in
                 ;;
         esac
         ;;
+    "dev")
+        dev
+        ;;
+    "prod")
+        prod
+        ;;
+    "api")
+        api
+        ;;
+    "web")
+        web
+        ;;
+    "stop")
+        stop
+        ;;
     "docker")
         docker_run
         ;;
@@ -381,11 +432,16 @@ case "${1:-help}" in
     "status")
         show_status
         ;;
+    "quick-start")
+        quick_start
+        ;;
     "help"|"-h"|"--help")
         show_help
         ;;
     *)
         print_error "Unknown command: $1"
+        echo
+        echo -e "${YELLOW}💡 Tip: Try './build.sh quick-start' for beginners!${NC}"
         echo
         show_help
         exit 1

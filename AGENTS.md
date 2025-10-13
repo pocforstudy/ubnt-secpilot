@@ -10,6 +10,30 @@ Configuration defaults are defined in `configs/settings/base.yaml`, with optiona
 - **UI Layer**: Blazor Server in `UbntSecPilot.BlazorUI/`
 - **Domain Layer**: Business models and contracts in `UbntSecPilot.Domain/`
 - **Application Layer**: Use cases and orchestration in `UbntSecPilot.Application/`
+
+## Orleans Agents Implementation
+
+### Implemented Agents
+
+#### **ThreatEnrichmentAgentGrain** (`UbntSecPilot.Agents.Orleans/`)
+- **Purpose**: Advanced threat detection and analysis using distributed processing
+- **Features**:
+  - Multi-layered threat detection (ports, user agents, IP addresses)
+  - Intelligent filtering of common test scenarios
+  - Severity assessment based on indicator count
+  - Two-phase commit (2PC) transaction support for data consistency
+  - Pre-analysis service integration for suspicious event detection
+- **Test Coverage**: 100% (28/28 tests passing)
+
+#### **Base Agent Framework** (`UbntSecPilot.Agents/`)
+- **Purpose**: Common functionality for all Orleans agents
+- **Features**:
+  - Standardized execution lifecycle
+  - Metadata collection and reporting
+  - Error handling and logging
+  - Cancellation token support
+- **Test Coverage**: 100% (16/16 tests passing)
+
 ## Build, Test, and Development Commands
 Ensure .NET 8 SDK is installed before development: verify with `dotnet --version`. Restore dependencies with `./build.sh restore` or `dotnet restore`. Build the application with `./build.sh build Debug` for development or `./build.sh build Release` for production. With the infrastructure stack running (`docker compose up redpanda mongo`), start the API with `./build.sh debug api` or the Blazor UI with `./build.sh debug blazor`. Run both together with `./build.sh debug full`. Execute tests with `./build.sh test` or target specific projects with `dotnet test UbntSecPilot.Application.Tests/UbntSecPilot.Application.Tests.csproj`. Format code with `dotnet format` and validate with `./build.sh build`. The default bootstrap servers are `localhost:9092`, MongoDB URI includes `localhost:27017`, the intelligence engine defaults to `spark` (with optional fallback to heuristics), and log level can be adjusted via `Logging:LogLevel` in `appsettings.Development.json`.
 

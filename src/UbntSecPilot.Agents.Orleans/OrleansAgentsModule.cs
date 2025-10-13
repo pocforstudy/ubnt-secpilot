@@ -2,6 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orleans;
 using Orleans.Configuration;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 namespace UbntSecPilot.Agents.Orleans
 {
@@ -18,6 +21,34 @@ namespace UbntSecPilot.Agents.Orleans
                     {
                         options.ClusterId = "dev";
                         options.ServiceId = serviceId;
+                    })
+                    .ConfigureServices(services =>
+                    {
+                        // Configure OpenTelemetry for Orleans
+                        services.AddOpenTelemetry()
+                            .WithTracing(tracing =>
+                            {
+                                tracing
+                                    .SetResourceBuilder(ResourceBuilder.CreateDefault()
+                                        .AddService("UbntSecPilot.Agents.Orleans", serviceVersion: "1.0.0"))
+                                    .AddOtlpExporter(options =>
+                                    {
+                                        options.Endpoint = new Uri("http://localhost:18888");
+                                        options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+                                    });
+                            })
+                            .WithMetrics(metrics =>
+                            {
+                                metrics
+                                    .SetResourceBuilder(ResourceBuilder.CreateDefault()
+                                        .AddService("UbntSecPilot.Agents.Orleans", serviceVersion: "1.0.0"))
+                                    .AddRuntimeInstrumentation()
+                                    .AddOtlpExporter(options =>
+                                    {
+                                        options.Endpoint = new Uri("http://localhost:18888");
+                                        options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+                                    });
+                            });
                     });
             });
         }
