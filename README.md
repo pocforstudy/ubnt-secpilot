@@ -6,7 +6,6 @@
 [![SonarQube](https://img.shields.io/badge/SonarQube-10.6-blue.svg)](https://sonarqube.org)
 [![Quality Gate](https://img.shields.io/badge/Quality_Gate-Passing-brightgreen.svg)](#)
 
-
 ---
 
 ## Visão Geral
@@ -131,7 +130,6 @@ docker compose ps
 ### Estrutura do Projeto
 
 ```bash
-
 
 ubnt-secpilot/
 ├── src/                             # Código fonte principal
@@ -365,10 +363,3 @@ Para suporte técnico ou dúvidas:
 | **SonarQube** | Ativo | 10.6 | Saudável |
 | **CI/CD** | Ativo | Latest | Saudável |
 | **.NET Aspire** | Ativo | 8.2 | Saudável |
-
-**Última atualização**: 30 de Setembro de 2025
-**Uptime**: 99.9% (últimos 30 dias)
-**Security Score**: A+ (OWASP compliance)
-
----
-
