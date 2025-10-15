@@ -130,9 +130,9 @@ docker compose ps
 
 ### Estrutura do Projeto
 
-```
+```bash
 
-```
+
 ubnt-secpilot/
 ├── src/                             # Código fonte principal
 │   ├── UbntSecPilot.Domain/         # Camada de domínio (DDD)
