@@ -1,0 +1,106 @@
+@using Microsoft.JSInterop
+
+<div class="copy-code-container">
+    <div class="code-header">
+        <span class="code-language">@Language</span>
+        <button class="copy-button" @onclick="CopyToClipboard" title="Copy code">
+            @if (IsCopied)
+            {
+                <span>✅ Copied!</span>
+            }
+            else
+            {
+                <span>📋 Copy</span>
+            }
+        </button>
+    </div>
+    <pre class="code-block"><code>@ChildContent</code></pre>
+</div>
+
+@code {
+    [Parameter] public string Language { get; set; } = "text";
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+    
+    private bool IsCopied { get; set; }
+    
+    private async Task CopyToClipboard()
+    {
+        try
+        {
+            // Get the text content from the code element
+            var codeText = await JSRuntime.InvokeAsync<string>("getCodeText", Language);
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", codeText);
+            
+            IsCopied = true;
+            StateHasChanged();
+            
+            // Reset the copied state after 2 seconds
+            await Task.Delay(2000);
+            IsCopied = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            // Fallback for browsers that don't support clipboard API
+            Console.WriteLine($"Failed to copy code: {ex.Message}");
+        }
+    }
+}
+
+<style>
+    .copy-code-container {
+        position: relative;
+        margin: 1rem 0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .code-header {
+        background: #2d3748;
+        color: white;
+        padding: 0.5rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Consolas', 'Monaco', monospace;
+        font-size: 0.875rem;
+    }
+    
+    .code-language {
+        text-transform: uppercase;
+        font-weight: 600;
+        opacity: 0.8;
+    }
+    
+    .copy-button {
+        background: #4a5568;
+        border: none;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        transition: background-color 0.2s;
+    }
+    
+    .copy-button:hover {
+        background: #5a6578;
+    }
+    
+    .code-block {
+        background: #1a202c;
+        color: #e2e8f0;
+        padding: 1rem;
+        margin: 0;
+        overflow-x: auto;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+    
+    .code-block code {
+        white-space: pre;
+    }
+</style>

@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   aspire-dashboard:
-    image: mcr.microsoft.com/dotnet/aspire-dashboard:8.2.0
-    ports:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:8.0.0
+    # ports:
       - "18888:18888"
       - "4317:4317"
       - "4318:4318"
@@ -17,19 +17,19 @@ services:
 
   mongodb:
     image: mongo:7.0
-    ports:
+    # ports:
       - "27017:27017"
     environment:
       - MONGO_INITDB_DATABASE=UbntSecPilot
     volumes:
       - mongodb-data:/data/db
-      - ./docker/mongo-init:/docker-entrypoint-initdb.d
+      - /app/docker/mongo-init:/docker-entrypoint-initdb.d
     networks:
       - ubnt-secpilot-network
 
   redis:
     image: redis:7.2-alpine
-    ports:
+    # ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
@@ -38,7 +38,7 @@ services:
 
   mongo-express:
     image: mongo-express:1.0.0-alpha
-    ports:
+    # ports:
       - "8081:8081"
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
@@ -53,7 +53,7 @@ services:
 
   redis-commander:
     image: rediscommander/redis-commander:latest
-    ports:
+    # ports:
       - "8082:8082"
     environment:
       - REDIS_HOSTS=local:redis:6379

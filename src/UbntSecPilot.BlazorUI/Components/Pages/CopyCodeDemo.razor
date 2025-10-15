@@ -1,0 +1,41 @@
+@page "/copycodedemo"
+@using UbntSecPilot.BlazorUI.Components
+
+<PageTitle>Copy Code Demo</PageTitle>
+
+<h1>Copy Code Component Demo</h1>
+
+<p>This page demonstrates the CopyCode component functionality.</p>
+
+<CopyCode Language="csharp">
+public class DemoClass
+{
+    public string Name { get; set; } = "Hello World";
+    
+    public void DemoMethod()
+    {
+        Console.WriteLine($"Hello {Name}!");
+    }
+}
+</CopyCode>
+
+<CopyCode Language="json">
+{
+  "name": "UBNT SecPilot",
+  "version": "1.0.0",
+  "features": [
+    "Threat Detection",
+    "Network Monitoring", 
+    "Agent Management"
+  ]
+}
+</CopyCode>
+
+<CopyCode Language="dockerfile">
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+WORKDIR /app
+COPY . .
+RUN dotnet restore
+RUN dotnet publish -c Release -o out
+ENTRYPOINT ["dotnet", "UbntSecPilot.WebApi.dll"]
+</CopyCode>
