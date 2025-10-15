@@ -342,14 +342,7 @@ docker compose logs redpanda
 docker compose logs api
 ```
 
-### Contato
 
-Para suporte técnico ou dúvidas:
-- **Email**: [contato@ubnt-secpilot.com]
-- **Slack**: [#secpilot-support]
-- **Telefone**: [+55 11 99999-9999]
-
----
 
 ## Status do Projeto
 
