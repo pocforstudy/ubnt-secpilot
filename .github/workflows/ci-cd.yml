@@ -126,7 +126,7 @@ jobs:
       run: dotnet restore ${{ env.SOLUTION_PATH }}
 
     - name: Run security scan
-      uses: securecodewarrior/github-action-gosec@master
+      uses: securecodewarrior/github-action-gosec@v1.4.0
       with:
         args: './...'
 
@@ -150,11 +150,11 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v4
 
     - name: Log in to Docker Hub (if credentials provided)
       if: github.event_name != 'pull_request'
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
@@ -220,24 +220,24 @@ jobs:
         dotnet-coverage merge ./coverage/*.cobertura.xml -o coverage.xml -f cobertura
 
     - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@master
+      uses: sonarsource/sonarqube-scan-action@v4.2.2
       env:
         SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
         SONAR_HOST_URL: http://localhost:9000
       with:
         args: >
           -Dsonar.projectKey=ubnt-secpilot
-          -Dsonar.projectName=UBNT SecPilot
+          -Dsonar.projectName="UBNT SecPilot"
           -Dsonar.projectVersion=1.0.0
-          -Dsonar.sources=UbntSecPilot.WebApi,UbntSecPilot.Application,UbntSecPilot.Domain,UbntSecPilot.Infrastructure,UbntSecPilot.Agents,UbntSecPilot.Agents.Orleans
-          -Dsonar.tests=UbntSecPilot.Application.Tests,UbntSecPilot.Agents.Tests,UbntSecPilot.Orleans.Tests
+          -Dsonar.sources=src/UbntSecPilot.WebApi,src/UbntSecPilot.Application,src/UbntSecPilot.Domain,src/UbntSecPilot.Infrastructure,src/UbntSecPilot.Agents,src/UbntSecPilot.Agents.Orleans,src/UbntSecPilot.AppHost,src/UbntSecPilot.BlazorUI
+          -Dsonar.tests=tests/UbntSecPilot.Application.Tests,tests/UbntSecPilot.Agents.Tests,tests/UbntSecPilot.Orleans.Tests
           -Dsonar.test.inclusions=**/*Tests.cs,**/*Test.cs
           -Dsonar.coverage.exclusions=**/*Test*.cs,**/*Tests.cs,**/*.AssemblyInfo.cs,**/*.AssemblyAttributes.cs,**/Program.cs,**/Startup.cs
           -Dsonar.cs.opencover.reportsPaths=coverage.xml
           -Dsonar.qualitygate=ubnt-secpilot-quality-gate
 
     - name: SonarQube Quality Gate Check
-      uses: sonarsource/sonarqube-quality-gate-action@master
+      uses: sonarsource/sonarqube-quality-gate-action@v1.2.0
       timeout-minutes: 5
       env:
         SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}

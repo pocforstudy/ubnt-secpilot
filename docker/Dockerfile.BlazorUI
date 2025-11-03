@@ -1,5 +1,5 @@
 # Build and publish Blazor Server (net8.0)
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.403 AS build
 WORKDIR /src
 
 # Copy project files
@@ -19,7 +19,7 @@ WORKDIR /src/UbntSecPilot.BlazorUI
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 # Runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0.10 AS final
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
